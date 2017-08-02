@@ -1,53 +1,16 @@
 package SimulacionRed;
 
 public class Data {
-    private String text;
-    private String binary;
-    private String hex;
-
-    /**
-     * Constructor
-     */
-    // TODO: 28/07/17 Metodos para encode / decode
-
-    /**
-     * Getters & Setters
-     */
-
-    // TODO: 28/07/17 Modificar a como sea necesario
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) { this.text = text; }
-
-    public String getBinary() {
-        return binary;
-    }
-
-    public void setBinary(String binary) {
-        this.binary = binary;
-    }
-
-    public String getHex() {
-        return hex;
-    }
-
-    public void setHex(String hex) {
-        this.hex = hex;
-    }
-
-
     /**
      * Data encode
      */
-
-    public void encodePlainText(String input) {
-        encodeBinary(getText());
-        encodeHex(input);
-        System.out.println("Data encoded: ");
-        System.out.println("Hexadecimal: " + getHex());
-        System.out.println("Binary: " + getBinary());
+    public String encodePlainText(String input, String type) {
+        if(type.toLowerCase().trim() == "b") {
+            return encodeBinary(input);
+        } else if (type.toLowerCase().trim() == "h") {
+            return encodeHex(input);
+        }
+        return null;
     }
 
     private String encodeBinary(String input) {
@@ -64,34 +27,30 @@ public class Data {
             }
             binary.append(' ');
         }
-        setBinary(binary.toString());
         return binary.toString();
     }
 
-    private void encodeHex(String input) {
+    private String encodeHex(String input) {
         String in = input;
         byte[] bytes = in.getBytes();
         StringBuilder hex = new StringBuilder();
         for (byte b : bytes) {
             hex.append(String.format("%02X ", b));
         }
-        setHex(hex.toString());
+        return hex.toString();
     }
 
     /**
      * Data decode
      */
 
-    public void decode(String type, String text) {
-        if (type.toLowerCase() == "b") {
-            setBinary(text);
-            decodeBinary(text);
-            encodeHex(text);
-        } else if ( type.toLowerCase() == "h") {
-            setHex(text);
-            decodeHex(text);
-            decodeBinary(text);
+    public String decode(String input, String type) {
+        if (type.toLowerCase().trim() == "b") {
+            return decodeBinary(input);
+        } else if ( type.toLowerCase().trim() == "h") {
+            return decodeHex(input);
         }
+        return null;
     }
 
     private String decodeBinary(String binary) {
@@ -107,8 +66,9 @@ public class Data {
     private String decodeHex(String hex) {
         String plainText = "";
         char nextChar;
-        for (int i = 0; i < hex.length(); i+=2) {
-            nextChar = (char)Integer.parseInt(hex.substring(i, i + 8), 2 );
+        for (int i = 0; i < hex.length(); i+=3) {
+            String str = hex.substring(i, i+2);
+            nextChar = (char)Integer.parseInt(str, 16);
             plainText += nextChar;
         }
         return plainText;
