@@ -1,9 +1,9 @@
 package SimulacionRed;
 
-public class Terminal extends Hardware {
+public class Router extends Hardware {
     private String ip;
 
-    public Terminal(String mac, String ip) {
+    public Router(String mac, String ip) {
         super(mac);
         this.ip = ip;
     }
@@ -15,5 +15,4 @@ public class Terminal extends Hardware {
     public void setIp(String ip) {
         this.ip = ip;
     }
-
 }
