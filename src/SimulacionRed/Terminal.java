@@ -16,4 +16,15 @@ public class Terminal extends Hardware {
         this.ip = ip;
     }
 
+    public String ARPrequest(Domain sourceDomain,String targetMac,String targetIp) {
+        ARP arp = new ARP('1',"0800",'6','4','1',this.getMac(),getIp(),targetMac,targetIp);
+
+        arp.arpProcess(arp,sourceDomain);
+
+
+        return null;
+    }
+
+
+
 }
