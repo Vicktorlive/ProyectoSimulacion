@@ -3,7 +3,7 @@ package SimulacionRed;
 import java.sql.*;
 import java.util.concurrent.TimeUnit;
 
-public class DataCenter{
+public class DataCenter {
 
     public String dataCenterConnection (String[] arg) throws SQLException, InterruptedException {
 

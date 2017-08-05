@@ -1,14 +1,14 @@
 package SimulacionRed;
-
+// http://mars.netanya.ac.il/~unesco/cdrom/booklet/HTML/NETWORKING/node020.html
 public class IPHeader {
     private char version; // ipv4 = 4
     private char internetHeaderLength; // 5
-    private String typeOfService; // TODO: 28/07/17 Investigar los campos en los que no hay informacion para ver que defaults se usan para TCP
-    private char totalLength;
-    private String identification;
-    private String flags; //
-    private String fragmentOffset;
-    private char timeToLive; // this-- for every time it jumps a router
+    private String typeOfService;
+    private int sizeOfDatagram; // In bytes, combined length of header and the data
+    private int identification; //  Uniquely identifies the datagram. Usually incremented by 1 each time a datagram is sent. All fragments of a datagram contain the same identification value.
+    private String flags; // Sequence of three flags that indicate to the router whether to fragment the packet
+    private int fragmentOffset; // number of fragment
+    private int timeToLive; // Number of hops/links which the packet may be routed over, decremented by most routers - used to prevent routing loops (this -- each router)
     private char protocol; // protocol being used 1 = ICMP / 6 = TCP
     private String headerChecksum; // validation like sha
     private String sourceAddress; // ip of sender
@@ -18,18 +18,17 @@ public class IPHeader {
      * Constructor
      */
 
-    // TODO: 28/07/17 Agregar defaults a como sea necesario
-    public IPHeader(char version, char internetHeaderLength, String typeOfService, char totalLength, String identification, String flags, String fragmentOffset, char timeToLive, char protocol, String headerChecksum, String sourceAddress, String destinationAddress) {
-        this.version = version;
-        this.internetHeaderLength = internetHeaderLength;
-        this.typeOfService = typeOfService;
-        this.totalLength = totalLength;
-        this.identification = identification;
-        this.flags = flags;
-        this.fragmentOffset = fragmentOffset;
-        this.timeToLive = timeToLive;
-        this.protocol = protocol;
-        this.headerChecksum = headerChecksum;
+    public IPHeader(String sourceAddress, String destinationAddress, int sizeOfDatagram) {
+        this.version = '4';
+        this.internetHeaderLength = '5';
+        this.typeOfService = "0010";// = maximize reliability
+        this.sizeOfDatagram = sizeOfDatagram;
+        this.identification = 1;
+        this.flags = "100";
+        this.fragmentOffset = 1;
+        this.timeToLive = 6;
+        this.protocol = '6';
+        this.headerChecksum = ""; // Process after all the package has been assembled
         this.sourceAddress = sourceAddress;
         this.destinationAddress = destinationAddress;
     }
@@ -62,19 +61,19 @@ public class IPHeader {
         this.typeOfService = typeOfService;
     }
 
-    public char getTotalLength() {
-        return totalLength;
+    public int getSizeOfDatagram() {
+        return sizeOfDatagram;
     }
 
-    public void setTotalLength(char totalLength) {
-        this.totalLength = totalLength;
+    public void setSizeOfDatagram(int sizeOfDatagram) {
+        this.sizeOfDatagram = sizeOfDatagram;
     }
 
-    public String getIdentification() {
+    public int getIdentification() {
         return identification;
     }
 
-    public void setIdentification(String identification) {
+    public void setIdentification(int identification) {
         this.identification = identification;
     }
 
@@ -86,19 +85,19 @@ public class IPHeader {
         this.flags = flags;
     }
 
-    public String getFragmentOffset() {
+    public int getFragmentOffset() {
         return fragmentOffset;
     }
 
-    public void setFragmentOffset(String fragmentOffset) {
+    public void setFragmentOffset(int fragmentOffset) {
         this.fragmentOffset = fragmentOffset;
     }
 
-    public char getTimeToLive() {
+    public int getTimeToLive() {
         return timeToLive;
     }
 
-    public void setTimeToLive(char timeToLive) {
+    public void setTimeToLive(int timeToLive) {
         this.timeToLive = timeToLive;
     }
 
