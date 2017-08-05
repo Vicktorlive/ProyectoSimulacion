@@ -27,5 +27,7 @@ public class Main {
         Domain domainUno = new Domain(routerUno,terminalUno,terminalDos,terminalTres,ipRange);
 
         terminalUno.ARPrequest(domainUno,routerUno.getMac(),"192.32.120.1");
+
+
     }
 }
