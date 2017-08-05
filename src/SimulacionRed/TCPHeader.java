@@ -2,8 +2,8 @@ package SimulacionRed;
 // http://es.ccm.net/contents/281-protocolo-tcp
 // http://www.freesoft.org/CIE/Course/Section4/8.htm
 public class TCPHeader {
-    private String sourcePort; // port from source terminal
-    private String destinationPort; // port from destination terminal
+    private int sourcePort; // port from source terminal
+    private int destinationPort; // port from destination terminal
     /*
     The sequence number of the first data octet in this segment (except
     when SYN is present). If SYN is present the sequence number is the
@@ -42,20 +42,16 @@ public class TCPHeader {
     acknowledgment field which the sender of this segment is willing to
     accept.
      */
-    private String window;
+    private int window; // Using a default for now
     //////////////////////////////////////////////////////////////////////
     private String checksum; // checksum for further validation
     private String urgentPointer;
-    private int options;
-    private int padding;
-    private Data data; // data being sent
+    private String data; // data being sent
 
     /**
      * Constructor
      */
-
-    // TODO: 28/07/17 Agregar defaults a como sea necesario
-    public TCPHeader(String sourcePort, String destinationPort, String window, Data data) {
+    public TCPHeader(int sourcePort, int destinationPort, String data) {
         this.sourcePort = sourcePort;
         this.destinationPort = destinationPort;
         this.sequenceNumber = 0;
@@ -68,30 +64,28 @@ public class TCPHeader {
         this.rst = 0;
         this.syn = 0;
         this.fin = 0;
-        this.window = window;
+        this.window = 32;
         this.checksum = "";
         this.urgentPointer = "0000000000000000";
-        this.options = 0;
-        this.padding = 32;
         this.data = data;
     }
 
     /**
      * Getters & Setters
      */
-    public String getSourcePort() {
+    public int getSourcePort() {
         return sourcePort;
     }
 
-    public void setSourcePort(String sourcePort) {
+    public void setSourcePort(int sourcePort) {
         this.sourcePort = sourcePort;
     }
 
-    public String getDestinationPort() {
+    public int getDestinationPort() {
         return destinationPort;
     }
 
-    public void setDestinationPort(String destinationPort) {
+    public void setDestinationPort(int destinationPort) {
         this.destinationPort = destinationPort;
     }
 
@@ -175,11 +169,11 @@ public class TCPHeader {
         this.fin = fin;
     }
 
-    public String getWindow() {
+    public int getWindow() {
         return window;
     }
 
-    public void setWindow(String window) {
+    public void setWindow(int window) {
         this.window = window;
     }
 
@@ -199,27 +193,36 @@ public class TCPHeader {
         this.urgentPointer = urgentPointer;
     }
 
-    public int getOptions() {
-        return options;
-    }
-
-    public void setOptions(int options) {
-        this.options = options;
-    }
-
-    public int getPadding() {
-        return padding;
-    }
-
-    public void setPadding(int padding) {
-        this.padding = padding;
-    }
-
-    public Data getData() {
+    public String getData() {
         return data;
     }
 
-    public void setData(Data data) {
+    public void setData(String data) {
         this.data = data;
+    }
+
+    public int calcDatagramSize() {
+        Data data = new Data();
+        String sp = Integer.toString(getSourcePort());
+        String dp = Integer.toString(getDestinationPort());
+        String sqN = Integer.toString(getSequenceNumber());
+        String acN = Integer.toString(getAckNumber());
+        String datOff = Integer.toString(getDataOffset());
+        String res = "00000000";
+        String urg = Integer.toString(getUrg());
+        String ack = Integer.toString((getAck()));
+        String psh = Integer.toString(getPsh());
+        String rst = Integer.toString(getRst());
+        String syn = Integer.toString(getSyn());
+        String fin = Integer.toString(getFin());
+        String win = Integer.toString(getWindow());
+        String chk = getChecksum();
+        String urgP = getUrgentPointer();
+        String dat = getData();
+
+        String all = sp + dp + sqN + acN + datOff + res + urg + ack + psh + rst + syn + fin + win + chk + urgP;
+        all = data.encodePlainText(all,"b") + dat;
+
+        return all.length();
     }
 }

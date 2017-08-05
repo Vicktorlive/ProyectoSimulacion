@@ -18,14 +18,11 @@ public class IPHeader {
      * Constructor
      */
 
-    // TODO: 28/07/17 Agregar defaults a como sea necesario
-
-
-    public IPHeader(String sourceAddress, String destinationAddress) {
+    public IPHeader(String sourceAddress, String destinationAddress, int sizeOfDatagram) {
         this.version = '4';
         this.internetHeaderLength = '5';
         this.typeOfService = "0010";// = maximize reliability
-        this.sizeOfDatagram = 0;
+        this.sizeOfDatagram = sizeOfDatagram;
         this.identification = 1;
         this.flags = "100";
         this.fragmentOffset = 1;

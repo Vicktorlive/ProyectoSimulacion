@@ -2,16 +2,16 @@ package SimulacionRed;
 
 public class Terminal extends Hardware {
     private String ip;
-    private String portOne;
-    private String portTwo;
-    private String portThree;
+    private int portOne;
+    private int portTwo;
+    private int portThree;
 
     public Terminal(String mac, String ip) {
         super(mac);
         this.ip = ip;
-        this.portOne = "80";
-        this.portTwo = "5228";
-        this.portThree = "4222";
+        this.portOne = 80;
+        this.portTwo = 5228;
+        this.portThree = 4222;
     }
 
     public String getIp() {
@@ -22,27 +22,27 @@ public class Terminal extends Hardware {
         this.ip = ip;
     }
 
-    public String getPortOne() {
+    public int getPortOne() {
         return portOne;
     }
 
-    public void setPortOne(String portOne) {
+    public void setPortOne(int portOne) {
         this.portOne = portOne;
     }
 
-    public String getPortTwo() {
+    public int getPortTwo() {
         return portTwo;
     }
 
-    public void setPortTwo(String portTwo) {
+    public void setPortTwo(int portTwo) {
         this.portTwo = portTwo;
     }
 
-    public String getPortThree() {
+    public int getPortThree() {
         return portThree;
     }
 
-    public void setPortThree(String portThree) {
+    public void setPortThree(int portThree) {
         this.portThree = portThree;
     }
 
@@ -60,16 +60,24 @@ public class Terminal extends Hardware {
      * @param destinationPort
      * @param indicators
      */
-    public void createPacket(String inputData, String destinationAddress, String sourcePort, String destinationPort, String indicators) {
+    public void createPacket(String inputData, String destinationAddress, int sourcePort, int destinationPort, String indicators) {
+        // Creating new Data object
         Data data = new Data();
+        // Converting input with Data to binary
         String input = data.encodePlainText(inputData,"b");
-        IPHeader ipHeader = new IPHeader(this.getIp(),destinationAddress);
-        TCPHeader tcpHeader = new TCPHeader(sourcePort,destinationPort);
+
+        //TCP header with encoded data to be sent
+        TCPHeader tcpHeader = new TCPHeader(sourcePort,destinationPort,input);
+        // Process indicator bits and change tcp attribute values as needed
         processIndicators(tcpHeader,indicators);
+        // Datagram size bits (mas o menos)
+        int dataSize = tcpHeader.calcDatagramSize();
 
+        //Creating the ip header
+        IPHeader ipHeader = new IPHeader(this.getIp(),destinationAddress,dataSize);
 
-        // Get size of tcp packet and use as sizeOfDatagram in ipheader
-        // int size=(numDouble*Double.SIZE+numInt*Integer.SIZE) / Byte.SIZE;
+        // Packet ready for whatever
+        IPPacket packet = new IPPacket(ipHeader,tcpHeader);
     }
 
     /**
@@ -98,6 +106,11 @@ public class Terminal extends Hardware {
         tcpHeader.setRst(indicatorBits[3]);
         tcpHeader.setSyn(indicatorBits[4]);
         tcpHeader.setFin(indicatorBits[5]);
+    }
+
+    private void calcDatagramSize(TCPHeader tcpHeader) {
+
+
     }
 
 }

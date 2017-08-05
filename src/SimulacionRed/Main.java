@@ -28,6 +28,7 @@ public class Main {
 
         terminalUno.ARPrequest(domainUno,routerUno.getMac(),"192.32.120.1");
 
-
+        int p = 80;
+        System.out.println((p * Integer.SIZE)/Byte.SIZE);
     }
 }
