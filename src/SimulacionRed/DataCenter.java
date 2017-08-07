@@ -5,8 +5,9 @@ import java.util.concurrent.TimeUnit;
 
 public class DataCenter{
 
-    public String dataCenterConnection (String[] arg) throws SQLException, InterruptedException {
+    public String dataCenterConnection (String res) throws SQLException, InterruptedException {
 
+        test_data_ip destIP = new test_data_ip();
         String port,ip_adress,exitAdress;
 
     Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/datacenters","root","");
@@ -28,14 +29,15 @@ public class DataCenter{
         System.out.println("Checking port: "+port +" with IP: "+ip_adress);
         TimeUnit.SECONDS.sleep(1);
         System.out.print("***");
-        if(ip_adress.equals("172.15.32.1")){   //TO DO: Change to verify destination adress
+        if(ip_adress.equals(destIP.getDestIP())){   //TO DO: Change to verify destination adress
             System.out.println("Found destination server");
+            destIP.setExitIP(ip_adress);
             exitAdress = ip_adress;
             break;
         }
     }
 
-        return "ok";  //Make Return exitAdress
+        return "Destination IP_Found";  //Make Return exitAdress
     }
 
 }
