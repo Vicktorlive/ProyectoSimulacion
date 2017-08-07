@@ -103,4 +103,43 @@ public class ARP {
     public void setTargetProtocolAddress(String targetProtocolAddress) {
         this.targetProtocolAddress = targetProtocolAddress;
     }
+    
+    public void arpProcess(ARP arp,Domain sourceDomain) {
+        // TODO: 3/08/17 use timeouts here 
+        arpStart(arp);
+        String border = "";
+        String whoIs = "[-] " + getSenderProtocolAddress() + " - Who is " + getTargetHardwareAddress();
+        String iAm = "[-] " + getTargetProtocolAddress() + " - I am " + getTargetHardwareAddress();
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        arpBroadcast(sourceDomain);
+        System.out.println(whoIs);
+        System.out.println(iAm);
+    }
+
+    private void arpStart(ARP arp) {
+        System.out.println("[+] Preparing type request...");
+        System.out.println("==> HW Address Type: " + arp.getHwAddressType());
+        System.out.println("==> Protocol Address Type: " + arp.getProtocolAddressType());
+        System.out.println("==> HW Address Length: " + arp.getHwAddressLength());
+        System.out.println("==> Protocol Address Length: " + arp.getProtocolAddressLength());
+        System.out.println("==> OP Code: " + arp.getOpCode());
+        System.out.println("==> Sender Hardware Address: " + arp.getSenderHardwareAddress());
+        System.out.println("==> Sender Protocol Address: " + arp.getSenderProtocolAddress());
+        System.out.println("==> Target Hardware Address: " + arp.getTargetHardwareAddress());
+        System.out.println("==> Target Protocol Address: " + arp.getTargetProtocolAddress());
+    }
+    
+    private void arpBroadcast(Domain sourceDomain) {
+        String ipRange = "";
+
+        for (int i = 0  ; i < sourceDomain.getIpRange().length; i++) {
+            if(i == 2) {
+                ipRange += Integer.toString(sourceDomain.getIpRange()[i]) + "/";
+            } else {
+                ipRange += Integer.toString(sourceDomain.getIpRange()[i]) + ".";
+            }
+
+        }
+        System.out.println("[+] Broadcasting in " + ipRange);
+    }
 }
