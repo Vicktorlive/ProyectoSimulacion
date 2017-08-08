@@ -1,5 +1,7 @@
 package SimulacionRed;
 
+import java.util.concurrent.TimeUnit;
+
 public class ARP {
     private char hwAddressType; // 1 = ethernet
     private String protocolAddressType; // 0800 = ip
@@ -117,7 +119,7 @@ public class ARP {
     }
 
     private void arpStart(ARP arp) {
-        System.out.println("[+] Preparing type request...");
+        System.out.println("[+] Preparing ARP request...");
         System.out.println("==> HW Address Type: " + arp.getHwAddressType());
         System.out.println("==> Protocol Address Type: " + arp.getProtocolAddressType());
         System.out.println("==> HW Address Length: " + arp.getHwAddressLength());
