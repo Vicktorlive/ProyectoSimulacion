@@ -92,8 +92,8 @@ public class Main {
 
         terminalB.packetReciever(packet);
 
-        terminalA.connectionSwitch();
-        terminalB.connectionSwitch();
+        terminalA.connectionSwitch(); // isTCPConnected = true
+        terminalB.connectionSwitch(); // isTCPConnected = true
 
         TimeUnit.SECONDS.sleep(1);
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
@@ -109,12 +109,18 @@ public class Main {
             do {
                 System.out.println("Send data over TCP Connection? (S/N)");
                 String answer = scanner.nextLine();
-
                 if (answer.toLowerCase().equals("n")) {
                     // Close connection
-                    /*
-                    MISSING FIN BIT SEND AND RECEIVE
-                     */
+                    packet = terminalA.createPacket("[FIN:1] [ACK:"+terminalA.getAckNumber()+"] [SEQ:"+terminalA.getSeqNumber()+"]",terminalB.getIp(),portA,portB,"010001");
+                    terminalB.packetReciever(packet);
+                    TimeUnit.SECONDS.sleep(2);
+                    packet = terminalB.createPacket("[FIN:1] [ACK:"+ terminalB.getAckNumber() + "] [SEQ:" + terminalB.getSeqNumber() + "]",terminalA.getIp(),portB,portA,"010001");
+                    terminalA.packetReciever(packet);
+                    TimeUnit.SECONDS.sleep(2);
+                    packet = terminalA.createPacket("[ACK:"+(terminalA.getAckNumber() + 1)+"]",terminalB.getIp(),portA,portB,"010000");
+                    terminalB.packetReciever(packet);
+                    TimeUnit.SECONDS.sleep(2);
+                    // Done with FIN bit sync
                     TimeUnit.SECONDS.sleep(1);
                     System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                     System.out.println("[+] CONNECTION CLOSED");
@@ -126,20 +132,38 @@ public class Main {
                     valid = true;
                 } else if (answer.toLowerCase().equals("s")) {
                     // Process input to send over tcp
-
                     System.out.println("Input data to send over TCP/IP");
                     String input = scanner.nextLine();
-
-
                     System.out.println("[+] Encoding ...");
                     TimeUnit.SECONDS.sleep(2);
                     System.out.println("[+] Data encoded");
                     System.out.println("[+] Assembling IP Packet");
-
+                    TimeUnit.SECONDS.sleep(1);
                     packet = terminalA.createPacket(input, terminalB.getIp(), packet.getIpMessage().getSourcePort(), packet.getIpMessage().getDestinationPort(), "010000");
-
                     System.out.println("[+] Sending IP Packet...");
+                    /*
+                    ROUTING FORWARDING
+                     */
 
+
+
+                    /*
+                    ENDS ROUTING FORWADING
+                     */
+                    terminalB.packetReciever(packet);
+                    terminalB.setAckNumber((terminalA.getSeqNumber() + input.length()) / Byte.SIZE);
+                    terminalB.setSeqNumber((terminalB.getSeqNumber() + input.length()) / Byte.SIZE);
+                    terminalB.decodeAndPrintData(packet.getIpMessage().getData());
+
+                    /*
+                    REPLY WITH ACK AND SEQ
+                     */
+                    input = "ACK: " + Integer.toString(terminalB.getAckNumber()) + " SEQ: " + Integer.toString(terminalB.getSeqNumber());
+                    System.out.println("[+] Preparing reply...");
+                    packet = terminalB.createPacket(input,terminalA.getIp(),packet.getIpMessage().getDestinationPort(),packet.getIpMessage().getSourcePort(),"010000");
+                    TimeUnit.SECONDS.sleep(1);
+                    System.out.println("[+] Sending reply");
+                    TimeUnit.SECONDS.sleep(2);
                     /*
                     ROUTING FORWARDING
                      */
@@ -150,17 +174,12 @@ public class Main {
                     ENDS ROUTING FORWADING
                      */
 
+                    /*
+                    Recieves reply
+                     */
+                    terminalA.packetReciever(packet);
+                    terminalA.decodeAndPrintData(packet.getIpMessage().getData());
 
-
-                    terminalB.packetReciever(packet);
-                    terminalB.setAckNumber((terminalA.getSeqNumber() + input.length()) / Byte.SIZE);
-                    terminalB.setSeqNumber((terminalB.getSeqNumber() + input.length()) / Byte.SIZE);
-
-                    System.out.println(terminalB.getAckNumber() + " -- " + terminalB.getSeqNumber());
-
-                    terminalB.decodeAndPrintData(packet.getIpMessage().getData());
-
-                    
                     valid = true;
                 } else {
                     System.out.println("Invalid Input");
@@ -168,18 +187,6 @@ public class Main {
                 }
             } while (!valid);
         }
-
-
-        // Al contestar que no se quiere mandar mas datos procesar un paquete con FIN bit = 1
-
-        // ACK de parte de la otra parte
-
-       /* TimeUnit.SECONDS.sleep(1);
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        System.out.println("[+] CONNECTION CLOSED");
-        System.out.println("\t==> TCP/IP");
-        System.out.println("\t==> " + terminalUno.getIp() + ":" + packet.getIpMessage().getSourcePort() + " to " + terminalCinco.getIp() + ":" + packet.getIpMessage().getDestinationPort());
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");*/
     }
 
     // TODO: 7/08/17 Metodos para enviar datos y cerrar conexion para limpiar main

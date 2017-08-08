@@ -113,7 +113,7 @@ public class ARP {
 
         String border = "";
         String whoIs = "\t==>" + getSenderProtocolAddress() + " - Who is " + getTargetHardwareAddress();
-        String iAm = "\t<== " + getTargetProtocolAddress() + " - I am " + getTargetHardwareAddress();
+        String iAm = "\t<==" + getTargetProtocolAddress() + " - I am " + getTargetHardwareAddress();
 
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         arpBroadcast(sourceDomain);
