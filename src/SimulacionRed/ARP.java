@@ -126,7 +126,7 @@ public class ARP {
 
     private void arpStart(ARP arp) throws InterruptedException {
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        System.out.println("[+] Preparing type request...");
+        System.out.println("[+] Preparing ARP request...");
 
         timeOut(1);
 
