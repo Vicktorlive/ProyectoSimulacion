@@ -70,6 +70,26 @@ public class TCPHeader {
         this.data = data;
     }
 
+    // TCPHeader without input to establish TCP Connection between machines
+    public TCPHeader(int sourcePort, int destinationPort) {
+        this.sourcePort = sourcePort;
+        this.destinationPort = destinationPort;
+        this.sequenceNumber = 0;
+        this.ackNumber = 0;
+        this.dataOffset = 4;
+        this.reserved = "";
+        this.urg = 0;
+        this.ack = 0;
+        this.psh = 0;
+        this.rst = 0;
+        this.syn = 0;
+        this.fin = 0;
+        this.window = 32;
+        this.checksum = "";
+        this.urgentPointer = "0000000000000000";
+        this.data = "";
+    }
+
     /**
      * Getters & Setters
      */
@@ -200,6 +220,7 @@ public class TCPHeader {
     public void setData(String data) {
         this.data = data;
     }
+
 
     public int calcDatagramSize() {
         Data data = new Data();

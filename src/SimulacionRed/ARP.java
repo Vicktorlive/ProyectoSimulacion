@@ -1,5 +1,8 @@
 package SimulacionRed;
 
+import java.sql.Time;
+import java.util.concurrent.TimeUnit;
+
 public class ARP {
     private char hwAddressType; // 1 = ethernet
     private String protocolAddressType; // 0800 = ip
@@ -104,42 +107,57 @@ public class ARP {
         this.targetProtocolAddress = targetProtocolAddress;
     }
     
-    public void arpProcess(ARP arp,Domain sourceDomain) {
-        // TODO: 3/08/17 use timeouts here 
+    public void arpProcess(ARP arp,Domain sourceDomain) throws InterruptedException {
+        // TODO: 3/08/17 use timeouts here
         arpStart(arp);
+
         String border = "";
-        String whoIs = "[-] " + getSenderProtocolAddress() + " - Who is " + getTargetHardwareAddress();
-        String iAm = "[-] " + getTargetProtocolAddress() + " - I am " + getTargetHardwareAddress();
+        String whoIs = "\t==>" + getSenderProtocolAddress() + " - Who is " + getTargetHardwareAddress();
+        String iAm = "\t<== " + getTargetProtocolAddress() + " - I am " + getTargetHardwareAddress();
+
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         arpBroadcast(sourceDomain);
         System.out.println(whoIs);
+
+        timeOut(2);
         System.out.println(iAm);
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     }
 
-    private void arpStart(ARP arp) {
+    private void arpStart(ARP arp) throws InterruptedException {
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         System.out.println("[+] Preparing type request...");
-        System.out.println("==> HW Address Type: " + arp.getHwAddressType());
-        System.out.println("==> Protocol Address Type: " + arp.getProtocolAddressType());
-        System.out.println("==> HW Address Length: " + arp.getHwAddressLength());
-        System.out.println("==> Protocol Address Length: " + arp.getProtocolAddressLength());
-        System.out.println("==> OP Code: " + arp.getOpCode());
-        System.out.println("==> Sender Hardware Address: " + arp.getSenderHardwareAddress());
-        System.out.println("==> Sender Protocol Address: " + arp.getSenderProtocolAddress());
-        System.out.println("==> Target Hardware Address: " + arp.getTargetHardwareAddress());
-        System.out.println("==> Target Protocol Address: " + arp.getTargetProtocolAddress());
+
+        timeOut(1);
+
+        System.out.println("\t==> HW Address Type: " + arp.getHwAddressType());
+        System.out.println("\t==> Protocol Address Type: " + arp.getProtocolAddressType());
+        System.out.println("\t==> HW Address Length: " + arp.getHwAddressLength());
+        System.out.println("\t==> Protocol Address Length: " + arp.getProtocolAddressLength());
+        System.out.println("\t==> OP Code: " + arp.getOpCode());
+        System.out.println("\t==> Sender Hardware Address: " + arp.getSenderHardwareAddress());
+        System.out.println("\t==> Sender Protocol Address: " + arp.getSenderProtocolAddress());
+        System.out.println("\t==> Target Hardware Address: " + arp.getTargetHardwareAddress());
+        System.out.println("\t==> Target Protocol Address: " + arp.getTargetProtocolAddress());
     }
     
-    private void arpBroadcast(Domain sourceDomain) {
+    private void arpBroadcast(Domain sourceDomain) throws InterruptedException {
         String ipRange = "";
 
         for (int i = 0  ; i < sourceDomain.getIpRange().length; i++) {
-            if(i == 2) {
+            if(i == 3) {
                 ipRange += Integer.toString(sourceDomain.getIpRange()[i]) + "/";
             } else {
                 ipRange += Integer.toString(sourceDomain.getIpRange()[i]) + ".";
             }
 
         }
+
+        timeOut(2);
         System.out.println("[+] Broadcasting in " + ipRange);
+    }
+
+    private void timeOut(int timeout) throws InterruptedException{
+        TimeUnit.SECONDS.sleep(timeout);
     }
 }
