@@ -108,7 +108,6 @@ public class Terminal extends Hardware {
         Data data = new Data();
         // Converting input with Data to binary
         String input = inputData.length() > 0 ? data.encodePlainText(inputData,"b") : "";
-
         //TCP header with encoded data to be sent
         TCPHeader tcpHeader = new TCPHeader(sourcePort,destinationPort,input);
         // Process indicator bits and change tcp attribute values as needed
@@ -190,6 +189,15 @@ public class Terminal extends Hardware {
         processIPHeader(ipPacket);
         processIPMessage(ipPacket);
         System.out.println(border);
+    }
+
+    public void decodeAndPrintData(String data) {
+        String border = "-------------- | Decoding Data | ---------------";
+        Data dataDecode = new Data();
+        System.out.println(border);
+        System.out.println("[*] Decoding Data...");
+        System.out.println("> " + dataDecode.decode(data,"b"));
+        System.out.println("------------------------------------------------");
     }
 
     private void processIPHeader(IPPacket ipPacket) throws InterruptedException{

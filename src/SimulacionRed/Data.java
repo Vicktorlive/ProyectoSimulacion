@@ -5,9 +5,9 @@ public class Data {
      * Data encode
      */
     public String encodePlainText(String input, String type) {
-        if(type.toLowerCase().trim() == "b") {
+        if(type.toLowerCase().trim().equals("b")) {
             return encodeBinary(input);
-        } else if (type.toLowerCase().trim() == "h") {
+        } else if (type.toLowerCase().trim().equals("h")) {
             return encodeHex(input);
         }
         return null;
@@ -45,9 +45,9 @@ public class Data {
      */
 
     public String decode(String input, String type) {
-        if (type.toLowerCase().trim() == "b") {
+        if (type.toLowerCase().trim().equals("b")) {
             return decodeBinary(input);
-        } else if ( type.toLowerCase().trim() == "h") {
+        } else if ( type.toLowerCase().trim().equals("h")) {
             return decodeHex(input);
         }
         return null;

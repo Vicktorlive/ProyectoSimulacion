@@ -129,7 +129,7 @@ public class Main {
 
                     System.out.println("Input data to send over TCP/IP");
                     String input = scanner.nextLine();
-                    input = data.encodePlainText(input, "b");
+
 
                     System.out.println("[+] Encoding ...");
                     TimeUnit.SECONDS.sleep(2);
@@ -138,9 +138,27 @@ public class Main {
 
                     packet = terminalA.createPacket(input, terminalB.getIp(), packet.getIpMessage().getSourcePort(), packet.getIpMessage().getDestinationPort(), "010000");
 
+                    System.out.println("[+] Sending IP Packet...");
+
+                    /*
+                    ROUTING FORWARDING
+                     */
+
+
+
+                    /*
+                    ENDS ROUTING FORWADING
+                     */
+
+
+
                     terminalB.packetReciever(packet);
                     terminalB.setAckNumber((terminalA.getSeqNumber() + input.length()) / Byte.SIZE);
                     terminalB.setSeqNumber((terminalB.getSeqNumber() + input.length()) / Byte.SIZE);
+
+                    System.out.println(terminalB.getAckNumber() + " -- " + terminalB.getSeqNumber());
+
+                    terminalB.decodeAndPrintData(packet.getIpMessage().getData());
 
                     
                     valid = true;
