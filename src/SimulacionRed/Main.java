@@ -46,6 +46,7 @@ public class Main {
         int portA = portSelection("A", terminalA);
         int portB = portSelection("B", terminalB);
 
+        scanner.nextLine(); // Clear buffer
 
         Domain domainA = resolveDomains(terminalA);
         Domain domainB = resolveDomains(terminalB);
@@ -65,7 +66,7 @@ public class Main {
         System.out.println("------------- Starting Simulation --------------");
         System.out.println("\n");
 
-
+        TimeUnit.SECONDS.sleep(3);
         /*
         Use input to determine sender/reciever
          */
@@ -109,7 +110,7 @@ public class Main {
                 System.out.println("Send data over TCP Connection? (S/N)");
                 String answer = scanner.nextLine();
 
-                if (answer.toLowerCase() == "n") {
+                if (answer.toLowerCase().equals("n")) {
                     // Close connection
                     /*
                     MISSING FIN BIT SEND AND RECEIVE
@@ -123,7 +124,7 @@ public class Main {
                     terminalB.connectionSwitch(); // Connection closed
                     terminalA.connectionSwitch(); // Connection closed
                     valid = true;
-                } else if (answer.toLowerCase() == "s") {
+                } else if (answer.toLowerCase().equals("s")) {
                     // Process input to send over tcp
 
                     System.out.println("Input data to send over TCP/IP");
@@ -292,7 +293,7 @@ public class Main {
         String ip = terminal.getIp();
         String[] slicedIP = ip.split("\\.");
         Domain domain;
-        if(slicedIP[0] == "192") {
+        if(slicedIP[0].equals("192")) {
             domain = domainUno;
         } else {
             domain = domainTwo;
