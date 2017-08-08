@@ -103,7 +103,7 @@ public class Terminal extends Hardware {
      * @param destinationPort
      * @param indicators
      */
-    public void createPacket(String inputData, String destinationAddress, int sourcePort, int destinationPort, String indicators) {
+    public IPPacket createPacket(String inputData, String destinationAddress, int sourcePort, int destinationPort, String indicators) {
         // Creating new Data object
         Data data = new Data();
         // Converting input with Data to binary
@@ -112,7 +112,7 @@ public class Terminal extends Hardware {
         //TCP header with encoded data to be sent
         TCPHeader tcpHeader = new TCPHeader(sourcePort,destinationPort,input);
         // Process indicator bits and change tcp attribute values as needed
-        processIndicators(tcpHeader,indicators);
+        processIndicators(tcpHeader,indicators, true);
         // Datagram size bits (mas o menos)
         int dataSize = tcpHeader.calcDatagramSize();
 
@@ -121,11 +121,13 @@ public class Terminal extends Hardware {
 
         // Packet ready for whatever
         IPPacket packet = new IPPacket(ipHeader,tcpHeader);
+
+        return packet;
     }
 
     public IPPacket establishTCP(String destinationAddress, int sourcePort, int destinationPort, String indicators) {
         TCPHeader tcpHeader = new TCPHeader(sourcePort,destinationPort);
-        processIndicators(tcpHeader,indicators);
+        processIndicators(tcpHeader,indicators, false);
 
         int dataSize = tcpHeader.calcDatagramSize();
 
@@ -142,7 +144,7 @@ public class Terminal extends Hardware {
      * @param tcpHeader
      * @param indicators
      */
-    private void processIndicators(TCPHeader tcpHeader, String indicators) {
+    private void processIndicators(TCPHeader tcpHeader, String indicators, boolean isStreaming) {
         /**
          * example indicators = 010000
          * urg = 0
@@ -156,15 +158,25 @@ public class Terminal extends Hardware {
         for (int i = 0; i <indicators.length(); i++) {
             indicatorBits[i] = Integer.parseInt(Character.toString(indicators.charAt(i)));
         }
-        tcpHeader.setUrg(indicatorBits[0]);
-        tcpHeader.setAck(indicatorBits[1]);
-        tcpHeader.setPsh(indicatorBits[2]);
-        tcpHeader.setRst(indicatorBits[3]);
-        tcpHeader.setSyn(indicatorBits[4]);
-        tcpHeader.setFin(indicatorBits[5]);
-        setAckNumber(indicatorBits[1] + getAckNumber());
-        setSeqNumber(indicatorBits[4] + getSeqNumber());
-        setFin(indicatorBits[5] + getFin());
+
+        if(isStreaming) {
+            tcpHeader.setUrg(indicatorBits[0]);
+            tcpHeader.setAck(indicatorBits[1]);
+            tcpHeader.setPsh(indicatorBits[2]);
+            tcpHeader.setRst(indicatorBits[3]);
+            tcpHeader.setSyn(indicatorBits[4]);
+            tcpHeader.setFin(indicatorBits[5]);
+        } else {
+            tcpHeader.setUrg(indicatorBits[0]);
+            tcpHeader.setAck(indicatorBits[1]);
+            tcpHeader.setPsh(indicatorBits[2]);
+            tcpHeader.setRst(indicatorBits[3]);
+            tcpHeader.setSyn(indicatorBits[4]);
+            tcpHeader.setFin(indicatorBits[5]);
+            setAckNumber(indicatorBits[1] + getAckNumber());
+            setSeqNumber(indicatorBits[4] + getSeqNumber());
+            setFin(indicatorBits[5] + getFin());
+        }
     }
 
     /**
