@@ -1,9 +1,6 @@
 package SimulacionRed;
 
-<<<<<<< HEAD
-=======
 import java.sql.Time;
->>>>>>> 9f1800195e13b927a57627c7af19837d3847079a
 import java.util.concurrent.TimeUnit;
 
 public class ARP {
@@ -127,19 +124,6 @@ public class ARP {
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     }
 
-<<<<<<< HEAD
-    private void arpStart(ARP arp) {
-        System.out.println("[+] Preparing ARP request...");
-        System.out.println("==> HW Address Type: " + arp.getHwAddressType());
-        System.out.println("==> Protocol Address Type: " + arp.getProtocolAddressType());
-        System.out.println("==> HW Address Length: " + arp.getHwAddressLength());
-        System.out.println("==> Protocol Address Length: " + arp.getProtocolAddressLength());
-        System.out.println("==> OP Code: " + arp.getOpCode());
-        System.out.println("==> Sender Hardware Address: " + arp.getSenderHardwareAddress());
-        System.out.println("==> Sender Protocol Address: " + arp.getSenderProtocolAddress());
-        System.out.println("==> Target Hardware Address: " + arp.getTargetHardwareAddress());
-        System.out.println("==> Target Protocol Address: " + arp.getTargetProtocolAddress());
-=======
     private void arpStart(ARP arp) throws InterruptedException {
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         System.out.println("[+] Preparing type request...");
@@ -155,7 +139,6 @@ public class ARP {
         System.out.println("\t==> Sender Protocol Address: " + arp.getSenderProtocolAddress());
         System.out.println("\t==> Target Hardware Address: " + arp.getTargetHardwareAddress());
         System.out.println("\t==> Target Protocol Address: " + arp.getTargetProtocolAddress());
->>>>>>> 9f1800195e13b927a57627c7af19837d3847079a
     }
     
     private void arpBroadcast(Domain sourceDomain) throws InterruptedException {
