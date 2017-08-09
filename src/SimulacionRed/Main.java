@@ -30,14 +30,10 @@ public class Main {
     public static int[] ipRangeTwo = {172, 15, 32, 1, 45};
     public static Domain domainTwo = new Domain(routerSeis, terminalCuatro, terminalCinco, terminalSeis, ipRangeTwo);
 
-    /*public static Domain domainA;
-    public static Domain domainB;*/
 
     public static void main(String[] args) throws InterruptedException {
-        // TODO: 28/07/17 Revisar conforme se avanze que getters y setters si se van a ocupan y eliminar el resto
+        // TODO: 8/08/17 CLEAN UP 
         // TODO: 3/08/17 IP Tables, Routing, Forwarding
-        // TODO: 3/08/17 Logica para conectar todo D=
-
         Terminal[] terminales = menu();
 
         Terminal terminalA = terminales[0];
@@ -130,7 +126,7 @@ public class Main {
                     terminalB.decodeAndPrintData(packet.getIpMessage().getData());
                     TimeUnit.SECONDS.sleep(2);
                     // Done with FIN bit sync
-                    
+
                     TimeUnit.SECONDS.sleep(1);
                     System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                     System.out.println("[+] CONNECTION CLOSED");
