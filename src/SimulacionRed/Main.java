@@ -75,7 +75,7 @@ public class Main {
         RESOLVE ROUTING & FORWARDING
          */
 
-        terminalB.packetReciever(packet); // Recieve first tcp message
+        terminalB.packetReciever(packet); // Receive first tcp message
 
         packet = terminalB.establishTCP(packet.getIpHeader().getSourceAddress(), packet.getIpMessage().getDestinationPort(), packet.getIpMessage().getSourcePort(), "010010"); // Respond
 
@@ -97,7 +97,6 @@ public class Main {
         System.out.println("\t==> TCP/IP");
         System.out.println("\t==> " + terminalA.getIp() + ":" + packet.getIpMessage().getSourcePort() + " to " + terminalB.getIp() + ":" + packet.getIpMessage().getDestinationPort());
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-
 
         // De aqui en adelante preguntar por input para enviar de A a B o viceversa
         while (terminalA.isTcpConnection() && terminalB.isTcpConnection()) {
@@ -185,7 +184,6 @@ public class Main {
                      */
                     terminalA.packetReciever(packet);
                     terminalA.decodeAndPrintData(packet.getIpMessage().getData());
-
                     valid = true;
                 } else {
                     System.out.println("Invalid Input");
@@ -242,12 +240,12 @@ public class Main {
                 System.out.println("---------------------------");
                 System.out.println("|         Grupo A          |");
                 System.out.println("---------------------------");
-                System.out.println("|  4) Terminal Uno         |");
-                System.out.println("|  5) Terminal Dos         |");
-                System.out.println("|  6) Terminal Tres        |");
+                System.out.println("|  1) Terminal Uno         |");
+                System.out.println("|  2) Terminal Dos         |");
+                System.out.println("|  3) Terminal Tres        |");
                 System.out.println("----------------------------");
                 reciever = scanner.nextInt();
-                if(reciever < 4 || reciever > 6) {
+                if(reciever < 1 || reciever > 3) {
                     System.out.println("[*] ERROR - OPCION NO VALIDA");
                 } else {
                     valid = true;
