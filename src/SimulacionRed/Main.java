@@ -112,15 +112,25 @@ public class Main {
                 if (answer.toLowerCase().equals("n")) {
                     // Close connection
                     packet = terminalA.createPacket("[FIN:1] [ACK:"+terminalA.getAckNumber()+"] [SEQ:"+terminalA.getSeqNumber()+"]",terminalB.getIp(),portA,portB,"010001");
+
                     terminalB.packetReciever(packet);
+                    TimeUnit.SECONDS.sleep(1);
+                    terminalB.decodeAndPrintData(packet.getIpMessage().getData());
                     TimeUnit.SECONDS.sleep(2);
                     packet = terminalB.createPacket("[FIN:1] [ACK:"+ terminalB.getAckNumber() + "] [SEQ:" + terminalB.getSeqNumber() + "]",terminalA.getIp(),portB,portA,"010001");
+
+                    TimeUnit.SECONDS.sleep(1);
                     terminalA.packetReciever(packet);
+                    terminalA.decodeAndPrintData(packet.getIpMessage().getData());
                     TimeUnit.SECONDS.sleep(2);
                     packet = terminalA.createPacket("[ACK:"+(terminalA.getAckNumber() + 1)+"]",terminalB.getIp(),portA,portB,"010000");
+
                     terminalB.packetReciever(packet);
+                    TimeUnit.SECONDS.sleep(1);
+                    terminalB.decodeAndPrintData(packet.getIpMessage().getData());
                     TimeUnit.SECONDS.sleep(2);
                     // Done with FIN bit sync
+                    
                     TimeUnit.SECONDS.sleep(1);
                     System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                     System.out.println("[+] CONNECTION CLOSED");
