@@ -1,13 +1,17 @@
 package SimulacionRed;
 
+/**
+ * Clase donde se argupa el Header con un payload TCP para crear el paquete TCP/IP
+ */
 public class IPPacket {
     private IPHeader ipHeader;
     private TCPHeader ipMessage;
 
     /**
-     * Constructor
+     * @Constructor
+     * @param ipHeader Objeto IPHeader
+     * @param ipMessage Objeto TCPHeader
      */
-
     public IPPacket(IPHeader ipHeader, TCPHeader ipMessage) {
         this.ipHeader = ipHeader;
         this.ipMessage = ipMessage;
@@ -16,7 +20,6 @@ public class IPPacket {
     /**
      * Getters & Setters
      */
-    // TODO: 28/07/17 Modificar a como sea necesario
     public IPHeader getIpHeader() {
         return ipHeader;
     }

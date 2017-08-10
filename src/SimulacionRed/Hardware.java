@@ -1,5 +1,8 @@
 package SimulacionRed;
 
+/**
+ * Clase base para lo que sea hardware
+ */
 public class Hardware {
     private String mac;
 
@@ -11,6 +14,10 @@ public class Hardware {
         return mac;
     }
 
+    /**
+     * @Constructor
+     * @param mac String MAC de hardware
+     */
     public void setMac(String mac) {
         this.mac = mac;
     }

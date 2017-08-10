@@ -1,5 +1,9 @@
 package SimulacionRed;
 // http://mars.netanya.ac.il/~unesco/cdrom/booklet/HTML/NETWORKING/node020.html
+
+/**
+ * Clase que permite crear el IP Header de un paquete de datos tipo IP
+ */
 public class IPHeader {
     private char version; // ipv4 = 4
     private char internetHeaderLength; // 5
@@ -15,9 +19,11 @@ public class IPHeader {
     private String destinationAddress; // ip of receiver
 
     /**
-     * Constructor
+     * @Constructor
+     * @param sourceAddress String IP de fuente
+     * @param destinationAddress String IP de quien recibe
+     * @param sizeOfDatagram int Tamano de datos
      */
-
     public IPHeader(String sourceAddress, String destinationAddress, int sizeOfDatagram) {
         this.version = '4';
         this.internetHeaderLength = '5';
@@ -36,7 +42,6 @@ public class IPHeader {
     /**
      * Getters & Setters
      */
-
     public char getVersion() {
         return version;
     }

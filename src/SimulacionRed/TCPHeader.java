@@ -1,6 +1,10 @@
 package SimulacionRed;
 // http://es.ccm.net/contents/281-protocolo-tcp
 // http://www.freesoft.org/CIE/Course/Section4/8.htm
+
+/**
+ * Clase que nos permite crear el objeto de TCP Header que sera el payload de nuestro IP Packet
+ */
 public class TCPHeader {
     private int sourcePort; // port from source terminal
     private int destinationPort; // port from destination terminal
@@ -49,7 +53,10 @@ public class TCPHeader {
     private String data; // data being sent
 
     /**
-     * Constructor
+     * @Constructor
+     * @param sourcePort int Puerto de fuente
+     * @param destinationPort int Puerto destino
+     * @param data String Datos
      */
     public TCPHeader(int sourcePort, int destinationPort, String data) {
         this.sourcePort = sourcePort;
@@ -221,7 +228,10 @@ public class TCPHeader {
         this.data = data;
     }
 
-
+    /**
+     * Metodo que nos permite hacer una aproximacion al tamano (bits) del datagrama que se enviara
+     * @return
+     */
     public int calcDatagramSize() {
         Data data = new Data();
         String sp = Integer.toString(getSourcePort());

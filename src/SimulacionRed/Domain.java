@@ -1,12 +1,10 @@
 package SimulacionRed;
 
+/**
+ * Clase para agrupar los diferentes grupos de equipos bajo un rango de IPs
+ */
 public class Domain {
-    /**
-     * In a domain we have a router and three terminals like in the diagram
-     *
-     * IP range will be an array for now where the last two indexes indicate range
-     * Example [192,20,30,90] = 192.20.30/90
-     */
+
     private Router router;
     private Terminal terminalOne;
     private Terminal terminalTwo;

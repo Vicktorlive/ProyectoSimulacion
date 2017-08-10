@@ -1,8 +1,14 @@
 package SimulacionRed;
 
+/**
+ * Clase de utileria para la transformacion de cadenas de texto a binario o hexadecimal y viceversa.
+ */
 public class Data {
     /**
-     * Data encode
+     * Metodo publico para convertir cadenas de texto a binario o hexadecimal
+     * @param input String texto que se desea convertir
+     * @param type Tipo de conversion a realizar b = binario, h = hexadecimal
+     * @return String cadena convertida
      */
     public String encodePlainText(String input, String type) {
         if(type.toLowerCase().trim().equals("b")) {
@@ -13,6 +19,11 @@ public class Data {
         return null;
     }
 
+    /**
+     * Metodo que convierte cadenas de texto a binario
+     * @param input String texto
+     * @return String binario
+     */
     private String encodeBinary(String input) {
         byte[] bytes = input.getBytes();
         StringBuilder binary = new StringBuilder();
@@ -30,6 +41,11 @@ public class Data {
         return binary.toString();
     }
 
+    /**
+     * Metodo que convierte cadenas de texto a hexadecimal
+     * @param input String texto
+     * @return String hexadecimal
+     */
     private String encodeHex(String input) {
         String in = input;
         byte[] bytes = in.getBytes();
@@ -41,9 +57,11 @@ public class Data {
     }
 
     /**
-     * Data decode
+     * Metodo publico para convertir cadenas binarias o hexadecimales a texto
+     * @param input String binario o hexadecimal
+     * @param type Indica el tipo de texto a convertir - String b = binario, h = hexadecimal
+     * @return String texto
      */
-
     public String decode(String input, String type) {
         if (type.toLowerCase().trim().equals("b")) {
             return decodeBinary(input);
@@ -53,6 +71,11 @@ public class Data {
         return null;
     }
 
+    /**
+     * Metodo para convertir cadenas binarias a texto
+     * @param binary String binario
+     * @return String texto
+     */
     private String decodeBinary(String binary) {
         String plainText = "";
         char nextChar;
@@ -63,6 +86,11 @@ public class Data {
         return plainText;
     }
 
+    /**
+     * Metodo para convertir cadenas hexadecimales a texto
+     * @param hex String hexadecimal
+     * @return String texto
+     */
     private String decodeHex(String hex) {
         String plainText = "";
         char nextChar;

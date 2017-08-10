@@ -13,7 +13,9 @@ import java.util.zip.DeflaterOutputStream;
 public class Main {
     public static Scanner scanner = new Scanner(System.in);
     public static Data data = new Data();
-
+    /**
+     * Se tienen tres terminales y un router por grupo o "domain"
+     */
     public static Terminal terminalUno = new Terminal("85-3E-4A-6E-85-F2", "192.80.13.2");
     public static Terminal terminalDos = new Terminal("7C-E4-30-D7-45-CE", "192.80.13.3");
     public static Terminal terminalTres = new Terminal("1C-D3-CE-A2-B5-CD", "192.80.13.4");
@@ -23,7 +25,9 @@ public class Main {
     public static Terminal terminalCinco = new Terminal("E8-F9-EB-5B-75-8A", "172.15.32.3");
     public static Terminal terminalSeis = new Terminal("23-41-76-A8-14-AF", "172.15.32.4");
     public static Router routerSeis = new Router("C9-E9-C8-27-F4-43", "172.15.32.1");
-
+    /**
+     * Existen dos domains con sus respectivos equipos y se les asigna su rango de IPs
+     */
     public static int[] ipRange = {192, 80, 13, 1, 40};
     public static Domain domainUno = new Domain(routerUno, terminalUno, terminalDos, terminalTres, ipRange);
 
@@ -34,23 +38,23 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         // TODO: 8/08/17 CLEAN UP 
         // TODO: 3/08/17 IP Tables, Routing, Forwarding
-        Terminal[] terminales = menu();
+        Terminal[] terminales = menu(); // Main menu
 
-        Terminal terminalA = terminales[0];
+        Terminal terminalA = terminales[0]; // Define selected terminals
         Terminal terminalB = terminales[1];
 
-        int portA = portSelection("A", terminalA);
+        int portA = portSelection("A", terminalA); // Define selected ports
         int portB = portSelection("B", terminalB);
 
         scanner.nextLine(); // Clear buffer
 
-        Domain domainA = resolveDomains(terminalA);
+        Domain domainA = resolveDomains(terminalA); // Define Domains
         Domain domainB = resolveDomains(terminalB);
 
-        Router routerA = resolveRouters(domainA);
+        Router routerA = resolveRouters(domainA); // Define routers
         Router routerB = resolveRouters(domainB);
 
-        System.out.println("[*] Informacion de conexion a simular:");
+        System.out.println("[*] Informacion de conexion a simular:"); // Display selected information
         System.out.println("\t==> Host A IP: " + terminalA.getIp());
         System.out.println("\t          MAC: " + terminalA.getMac());
         System.out.println("\t         Port: " + portA);
@@ -63,33 +67,61 @@ public class Main {
         System.out.println("\n");
 
         TimeUnit.SECONDS.sleep(3);
-        /*
-        Use input to determine sender/reciever
-         */
+
         System.out.println("[+] Establishing TCP Connection...");
-        terminalA.ARPrequest(domainA, routerA.getMac(), routerA.getIp());
 
-        IPPacket packet = terminalA.establishTCP(terminalB.getIp(), portA, portB, "000010");
+        terminalA.ARPrequest(domainA, "Resolving ...", routerA.getIp());
+        IPPacket packet = terminalA.createPacket("[SYN:1]",terminalB.getIp(),portA,portB,"000010"); // First packet to establish TCP connection
+        EthernetFrame ethernetFrame = new EthernetFrame("FF:FF:FF:FF:FF:FF",terminalA.getMac(),"0806",packet,1); // Packet goes inside an ethernet frame
+        terminalA.setSeqNumber(1); // Set Sequence number
+        packetAssemblyMsg();
+        ethernetFrameMsg(ethernetFrame);
+        /*
+        RESOLVE ROUTING & FORWARDING
+         */
+
+        /*
+        ENDS ROUTING & FORWARDING
+         */
+        terminalB.packetReciever(ethernetFrame); // Receive first tcp message
+        terminalB.decodeAndPrintData(packet.getIpMessage().getData()); // Decode binary data
+        replyMsg();
+
+        packet = terminalB.createPacket("[ACK:1] [SYN:1]",packet.getIpHeader().getSourceAddress(),packet.getIpMessage().getDestinationPort(),packet.getIpMessage().getSourcePort(),"010010"); // Respond
+        ethernetFrame.reFrame(terminalA.getMac(),terminalB.getMac(),ethernetFrame.getEtherType(),packet,ethernetFrame.getFrameCheckSeq());
+        terminalB.setAckNumber(1); // Set ACK number
+        terminalB.setSeqNumber(1);// Set SEQ number
+        packetAssemblyMsg();
+        ethernetFrameMsg(ethernetFrame);
 
         /*
         RESOLVE ROUTING & FORWARDING
          */
 
-        terminalB.packetReciever(packet); // Receive first tcp message
+        /*
+        ENDS ROUTING & FORWARDING
+         */
+        terminalA.packetReciever(ethernetFrame); // Receives reply
+        terminalA.decodeAndPrintData(packet.getIpMessage().getData()); // Decode binary data
+        replyMsg();
 
-        packet = terminalB.establishTCP(packet.getIpHeader().getSourceAddress(), packet.getIpMessage().getDestinationPort(), packet.getIpMessage().getSourcePort(), "010010"); // Respond
-
+        packet = terminalA.createPacket("[ACK:1]",packet.getIpHeader().getSourceAddress(),packet.getIpMessage().getDestinationPort(),packet.getIpMessage().getSourcePort(),"010000"); // Respond
+        ethernetFrame.reFrame(ethernetFrame.getSourceAddress(),ethernetFrame.getDestinationAddress(),ethernetFrame.getEtherType(),packet,ethernetFrame.getFrameCheckSeq());
+        terminalA.setAckNumber(1); // Set ACK number
+        packetAssemblyMsg();
+        ethernetFrameMsg(ethernetFrame);
         /*
         RESOLVE ROUTING & FORWARDING
          */
 
-        terminalA.packetReciever(packet); // Recieves reply
-        packet = terminalA.establishTCP(packet.getIpHeader().getSourceAddress(), packet.getIpMessage().getDestinationPort(), packet.getIpMessage().getSourcePort(), "010000"); // Respond
+        /*
+        ENDS ROUTING & FORWARDING
+         */
+        terminalB.packetReciever(ethernetFrame); // Receive
+        terminalB.decodeAndPrintData(packet.getIpMessage().getData()); // Decode binary data
 
-        terminalB.packetReciever(packet);
-
-        terminalA.connectionSwitch(); // isTCPConnected = true
-        terminalB.connectionSwitch(); // isTCPConnected = true
+        terminalA.connectionSwitch(); // isTCPConnection = true
+        terminalB.connectionSwitch(); // isTCPConnection = true
 
         TimeUnit.SECONDS.sleep(1);
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
@@ -98,29 +130,64 @@ public class Main {
         System.out.println("\t==> " + terminalA.getIp() + ":" + packet.getIpMessage().getSourcePort() + " to " + terminalB.getIp() + ":" + packet.getIpMessage().getDestinationPort());
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
-        // De aqui en adelante preguntar por input para enviar de A a B o viceversa
+        /**
+         * PROCESO PRINCIPAL DE TCP
+         */
         while (terminalA.isTcpConnection() && terminalB.isTcpConnection()) {
             boolean valid = false;
             do {
                 System.out.println("Send data over TCP Connection? (S/N)");
                 String answer = scanner.nextLine();
                 if (answer.toLowerCase().equals("n")) {
+                    String input = "[ACK:" + Integer.toString(terminalA.getAckNumber()) + "] [SEQ: " + Integer.toString(terminalA.getSeqNumber()) + "]";
                     // Close connection
-                    packet = terminalA.createPacket("[FIN:1] [ACK:"+terminalA.getAckNumber()+"] [SEQ:"+terminalA.getSeqNumber()+"]",terminalB.getIp(),portA,portB,"010001");
+                    System.out.println("[+] Closing connection ...");
+                    packet = terminalA.createPacket("[FIN:1] " + input,terminalB.getIp(),portA,portB,"010001"); // Send first FIN
+                    ethernetFrame.reFrame(terminalB.getMac(),terminalA.getMac(),"0800",packet,1);
+                    packetAssemblyMsg();
+                    ethernetFrameMsg(ethernetFrame);
+                    /*
+                    ROUTING FORWARDING
+                     */
 
-                    terminalB.packetReciever(packet);
+                    /*
+                    ENDS ROUTING FORWARDING
+                     */
+                    terminalB.packetReciever(ethernetFrame);
                     TimeUnit.SECONDS.sleep(1);
                     terminalB.decodeAndPrintData(packet.getIpMessage().getData());
+                    replyMsg();
                     TimeUnit.SECONDS.sleep(2);
-                    packet = terminalB.createPacket("[FIN:1] [ACK:"+ terminalB.getAckNumber() + "] [SEQ:" + terminalB.getSeqNumber() + "]",terminalA.getIp(),portB,portA,"010001");
+                    input = "[ACK:" + Integer.toString(terminalB.getAckNumber()) + "] [SEQ: " + Integer.toString(terminalB.getSeqNumber()) + "]";
+                    packet = terminalB.createPacket("[FIN:1] " + input,terminalA.getIp(),portB,portA,"010001"); // ACK and FIN
+                    ethernetFrame.reFrame(ethernetFrame.getSourceAddress(),ethernetFrame.getDestinationAddress(),ethernetFrame.getEtherType(),packet,1);
+                    packetAssemblyMsg();
+                    ethernetFrameMsg(ethernetFrame);
+                    /*
+                    ROUTING FORWARDING
+                     */
 
+                    /*
+                    ENDS ROUTING FORWARDING
+                     */
                     TimeUnit.SECONDS.sleep(1);
-                    terminalA.packetReciever(packet);
+                    terminalA.packetReciever(ethernetFrame);
                     terminalA.decodeAndPrintData(packet.getIpMessage().getData());
+                    replyMsg();
                     TimeUnit.SECONDS.sleep(2);
-                    packet = terminalA.createPacket("[ACK:"+(terminalA.getAckNumber() + 1)+"]",terminalB.getIp(),portA,portB,"010000");
+                    packetAssemblyMsg();
+                    packet = terminalA.createPacket("[ACK:"+(terminalA.getAckNumber() + 1)+"]",terminalB.getIp(),portA,portB,"010000"); // Last ACK
+                    ethernetFrame.reFrame(ethernetFrame.getSourceAddress(),ethernetFrame.getDestinationAddress(),ethernetFrame.getEtherType(),packet,1);
+                    packetAssemblyMsg();
+                    ethernetFrameMsg(ethernetFrame);
+                    /*
+                    ROUTING FORWARDING
+                     */
 
-                    terminalB.packetReciever(packet);
+                    /*
+                    ENDS ROUTING FORWARDING
+                     */
+                    terminalB.packetReciever(ethernetFrame);
                     TimeUnit.SECONDS.sleep(1);
                     terminalB.decodeAndPrintData(packet.getIpMessage().getData());
                     TimeUnit.SECONDS.sleep(2);
@@ -139,23 +206,18 @@ public class Main {
                     // Process input to send over tcp
                     System.out.println("Input data to send over TCP/IP");
                     String input = scanner.nextLine();
-                    System.out.println("[+] Encoding ...");
-                    TimeUnit.SECONDS.sleep(2);
-                    System.out.println("[+] Data encoded");
-                    System.out.println("[+] Assembling IP Packet");
-                    TimeUnit.SECONDS.sleep(1);
                     packet = terminalA.createPacket(input, terminalB.getIp(), packet.getIpMessage().getSourcePort(), packet.getIpMessage().getDestinationPort(), "010000");
-                    System.out.println("[+] Sending IP Packet...");
+                    ethernetFrame.reFrame(terminalB.getMac(),terminalA.getMac(),"0800",packet,1);
+                    packetAssemblyMsg();
+                    ethernetFrameMsg(ethernetFrame);
                     /*
                     ROUTING FORWARDING
                      */
 
-
-
                     /*
-                    ENDS ROUTING FORWADING
+                    ENDS ROUTING FORWARDING
                      */
-                    terminalB.packetReciever(packet);
+                    terminalB.packetReciever(ethernetFrame);
                     terminalB.setAckNumber((terminalA.getSeqNumber() + input.length()) / Byte.SIZE);
                     terminalB.setSeqNumber((terminalB.getSeqNumber() + input.length()) / Byte.SIZE);
                     terminalB.decodeAndPrintData(packet.getIpMessage().getData());
@@ -163,12 +225,12 @@ public class Main {
                     /*
                     REPLY WITH ACK AND SEQ
                      */
-                    input = "ACK: " + Integer.toString(terminalB.getAckNumber()) + " SEQ: " + Integer.toString(terminalB.getSeqNumber());
-                    System.out.println("[+] Preparing reply...");
+                    input = "[ACK:" + Integer.toString(terminalB.getAckNumber()) + "] [SEQ:" + Integer.toString(terminalB.getSeqNumber()) + "]";
+                    replyMsg();
                     packet = terminalB.createPacket(input,terminalA.getIp(),packet.getIpMessage().getDestinationPort(),packet.getIpMessage().getSourcePort(),"010000");
-                    TimeUnit.SECONDS.sleep(1);
-                    System.out.println("[+] Sending reply");
-                    TimeUnit.SECONDS.sleep(2);
+                    ethernetFrame.reFrame(ethernetFrame.getSourceAddress(),ethernetFrame.getDestinationAddress(),ethernetFrame.getEtherType(),packet,1);
+                    packetAssemblyMsg();
+                    ethernetFrameMsg(ethernetFrame);
                     /*
                     ROUTING FORWARDING
                      */
@@ -176,13 +238,13 @@ public class Main {
 
 
                     /*
-                    ENDS ROUTING FORWADING
+                    ENDS ROUTING FORWARDING
                      */
 
                     /*
-                    Recieves reply
+                    Receives reply
                      */
-                    terminalA.packetReciever(packet);
+                    terminalA.packetReciever(ethernetFrame);
                     terminalA.decodeAndPrintData(packet.getIpMessage().getData());
                     valid = true;
                 } else {
@@ -193,8 +255,10 @@ public class Main {
         }
     }
 
-    // TODO: 7/08/17 Metodos para enviar datos y cerrar conexion para limpiar main
-
+    /**
+     * Menu princpial
+     * @return Array con las terminales que eligio el usuario
+     */
     private static Terminal[] menu() {
         int sender = 0;
         int reciever = 0;
@@ -300,6 +364,12 @@ public class Main {
         return terminales;
     }
 
+    /**
+     * Menu para la seleccion de puertos de ambos hosts
+     * @param host A o B
+     * @param terminal
+     * @return El puerto que usara la terminal
+     */
     private static int portSelection(String host, Terminal terminal) {
         System.out.println("[*] Seleccione el puerto de Host" + host.toUpperCase() +": ");
         System.out.println(" 1) 80");
@@ -318,6 +388,11 @@ public class Main {
         return 0;
     }
 
+    /**
+     * Asigna los domains A y B  dependiendo de la seleccion de los usuarios
+     * @param terminal
+     * @return domain
+     */
     private static Domain resolveDomains(Terminal terminal) {
         String ip = terminal.getIp();
         String[] slicedIP = ip.split("\\.");
@@ -330,6 +405,11 @@ public class Main {
         return domain;
     }
 
+    /**
+     * Asigna los routers A y B dependiendo de la seleccion de los usuarios
+     * @param domain
+     * @return Objeto Router
+     */
     private static Router resolveRouters(Domain domain) {
         Router domainRouter;
         if (domain.getIpRange()[0] == 192) {
@@ -338,6 +418,51 @@ public class Main {
             domainRouter = routerSeis;
         }
         return domainRouter;
+    }
+
+    /**
+     * Mensaje para cuando esta creando un paquete
+     * @throws InterruptedException Timeout
+     */
+    private static void packetAssemblyMsg() throws InterruptedException{
+        System.out.println("[+] Encoding ...");
+        TimeUnit.SECONDS.sleep(2);
+        System.out.println("[+] Assembling IP Packet ...");
+        TimeUnit.SECONDS.sleep(1);
+        System.out.println("[+] Passing packet to Ethernet Frame as payload ...");
+    }
+
+    /**
+     * Mensaje para indicar que se respondera al paquete recivido
+     * @throws InterruptedException Timeout
+     */
+    private static void replyMsg() throws InterruptedException {
+        System.out.println("[+] Preparing reply...");
+        TimeUnit.SECONDS.sleep(1);
+    }
+
+    /**
+     * Mensaje para indicar la creacion de un Ethernet Frame
+     * @param ethernetFrame Objeto EthernetFrame
+     * @throws InterruptedException Timeouts
+     */
+    private static void ethernetFrameMsg(EthernetFrame ethernetFrame) throws InterruptedException{
+        System.out.println("[+] Assembling Ethernet Frame ...");
+        TimeUnit.SECONDS.sleep(1);
+        System.out.println("\t==> Preamble: " + ethernetFrame.getPreamble());
+        System.out.println("\t==> Destination Address: " + ethernetFrame.getDestinationAddress());
+        System.out.println("\t==> Source Address: " + ethernetFrame.getSourceAddress());
+        System.out.println("\t==> Ether Type: " + ethernetFrame.getEtherType());
+        String payload = ethernetFrame.getEtherType().equals("0806") ? "ARP" : "IP Packet";
+        System.out.println("\t==> Payload: " + payload);
+        System.out.println("\t==> Frame Check Sequence: " + ethernetFrame.getFrameCheckSeq());
+        TimeUnit.SECONDS.sleep(1);
+        System.out.println("[+] Sending Packet ...");
+        String border = "--------------- | " + ethernetFrame.getPayload().getIpHeader().getSourceAddress() + " | ---------------";
+        String delimiter = "+++++++++++++++++++++++++++++++++++++++++++++++++++";
+
+        System.out.println(border + "\n" + delimiter);
+        System.out.println("\n\n");
     }
 }
 

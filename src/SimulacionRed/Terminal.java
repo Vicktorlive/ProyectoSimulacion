@@ -4,6 +4,10 @@ import com.sun.org.apache.xpath.internal.SourceTree;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Clase para instanciar las terminales que formaran parte de la red a simular, se extiende de Hardware para
+ * tener una direccion MAC por terminal
+ */
 public class Terminal extends Hardware {
     private String ip;
     private int portOne;
@@ -14,6 +18,11 @@ public class Terminal extends Hardware {
     private int fin;
     private boolean tcpConnection;
 
+    /**
+     *
+     * @param mac
+     * @param ip
+     */
     public Terminal(String mac, String ip) {
         super(mac);
         this.ip = ip;
@@ -138,8 +147,7 @@ public class Terminal extends Hardware {
     }
 
     /**
-     * Process indicatos from createPacket so we can modify this terminals TCP data (sequenceNumber and ackNumber
-     * in this implementation)
+     * Metodo para procesar y asignar los indicadores (URG, ACK, PSH, RST, SYN, FIN)que se usen al crear un paquete
      * @param tcpHeader
      * @param indicators
      */
@@ -179,20 +187,29 @@ public class Terminal extends Hardware {
     }
 
     /**
-     * Method for Terminals to receive incoming packets for further breakdown and processing
-     * @param ipPacket
+     * Metodo por el cual la terminal recibira el paquete enviado desde otra terminal
+     * @param ethernetFrame Objeto EthernetFrame
      */
-    public void packetReciever(IPPacket ipPacket) throws InterruptedException{
-        String border = "--------------- | " + getIp() + " | ---------------";
-        System.out.println(border);
+    public void packetReciever(EthernetFrame ethernetFrame) throws InterruptedException{
+        String delimiter = "+++++++++++++++++++++++++++++++++++++++++++++++++++";
+           String border = "--------------- | " + getIp() + " | ---------------";
+        System.out.println(delimiter + "\n" + border);
         System.out.println("[+] Incoming data ...");
-        processIPHeader(ipPacket);
-        processIPMessage(ipPacket);
-        System.out.println(border);
+        processFrame(ethernetFrame);
+
+        processIPHeader(ethernetFrame.getPayload().getIpHeader());
+        processIPMessage(ethernetFrame.getPayload().getIpMessage());
+        // System.out.println(border);
     }
 
-    public void decodeAndPrintData(String data) {
+    /**
+     * Metodo para convertir los datos recibidos en binario o hexadecimal a texto
+     * @param data
+     * @throws InterruptedException
+     */
+    public void decodeAndPrintData(String data) throws InterruptedException {
         String border = "-------------- | Decoding Data | ---------------";
+        TimeUnit.SECONDS.sleep((long) 1.5);
         Data dataDecode = new Data();
         System.out.println(border);
         System.out.println("[*] Decoding Data...");
@@ -200,44 +217,77 @@ public class Terminal extends Hardware {
         System.out.println("------------------------------------------------");
     }
 
-    private void processIPHeader(IPPacket ipPacket) throws InterruptedException{
-        System.out.println("[-] Processing IP Header ...");
+    /**
+     * Metodo para desglozar y mostrar datos del ethernet frame
+     * @param ethernetFrame Objeto Ethernet Frame
+     * @throws InterruptedException Timeouts
+     */
+    private void processFrame(EthernetFrame ethernetFrame) throws InterruptedException{
+        System.out.println("[+] Processing Ethernet Frame ...");
         TimeUnit.SECONDS.sleep(1);
-        System.out.println("\t==> IP Version: " + ipPacket.getIpHeader().getVersion());
-        System.out.println("\t==> Header Length: " + ipPacket.getIpHeader().getVersion());
-        System.out.println("\t==> Type of Service: " + ipPacket.getIpHeader().getTypeOfService());
-        System.out.println("\t==> Size of Datagram: " + ipPacket.getIpHeader().getSizeOfDatagram());
-        System.out.println("\t==> ID: " + ipPacket.getIpHeader().getIdentification());
-        System.out.println("\t==> Flags: " + ipPacket.getIpHeader().getFlags());
-        System.out.println("\t==> Fragment Offset: " + ipPacket.getIpHeader().getFragmentOffset());
-        System.out.println("\t==> Time to live: " + ipPacket.getIpHeader().getTimeToLive());
-        System.out.println("\t==> Protocol: " + ipPacket.getIpHeader().getProtocol());
-        System.out.println("\t==> Checksum: " + ipPacket.getIpHeader().getHeaderChecksum());
-        System.out.println("\t==> Sender IP: " + ipPacket.getIpHeader().getSourceAddress());
-        System.out.println("\t==> Destination IP: " + ipPacket.getIpHeader().getDestinationAddress());
+        System.out.println("\t==> Preamble: " + ethernetFrame.getPreamble());
+        System.out.println("\t==> Destination Address: " + ethernetFrame.getDestinationAddress());
+        System.out.println("\t==> Source Address: " + ethernetFrame.getSourceAddress());
+        System.out.println("\t==> Ether Type: " + ethernetFrame.getEtherType());
+        String payload = ethernetFrame.getEtherType().equals("0806") ? "ARP" : "IP Packet";
+        System.out.println("\t==> Payload: " + payload);
+        System.out.println("\t==> Frame Check Sequence: " + ethernetFrame.getFrameCheckSeq());
+        TimeUnit.SECONDS.sleep(1);
+        System.out.println("[+] Unpacking payload ...");
+        TimeUnit.SECONDS.sleep(2);
     }
 
-    private void processIPMessage(IPPacket ipPacket) throws InterruptedException {
-        System.out.println("[-] Processing payload ...");
+    /**
+     * Metodo para mostrar los datos que van dentro del IP Header del paquete
+     * @param ipHeader Objeto IPHeader
+     * @throws InterruptedException Timeouts
+     */
+    private void processIPHeader(IPHeader ipHeader) throws InterruptedException{
+        System.out.println("[+] Processing IP Header ...");
         TimeUnit.SECONDS.sleep(1);
-        System.out.println("\t==> Source Port: " + ipPacket.getIpMessage().getSourcePort());
-        System.out.println("\t==> Destination port: " + ipPacket.getIpMessage().getDestinationPort());
-        System.out.println("\t==> Sequence Number: " + ipPacket.getIpMessage().getSequenceNumber());
-        System.out.println("\t==> Acknowledgement Number: " + ipPacket.getIpMessage().getAckNumber());
-        System.out.println("\t==> Data Offset: " + ipPacket.getIpMessage().getDataOffset());
+        System.out.println("\t==> IP Version: " + ipHeader.getVersion());
+        System.out.println("\t==> Header Length: " + ipHeader.getVersion());
+        System.out.println("\t==> Type of Service: " + ipHeader.getTypeOfService());
+        System.out.println("\t==> Size of Datagram: " + ipHeader.getSizeOfDatagram());
+        System.out.println("\t==> ID: " + ipHeader.getIdentification());
+        System.out.println("\t==> Flags: " + ipHeader.getFlags());
+        System.out.println("\t==> Fragment Offset: " + ipHeader.getFragmentOffset());
+        System.out.println("\t==> Time to live: " + ipHeader.getTimeToLive());
+        System.out.println("\t==> Protocol: " + ipHeader.getProtocol());
+        System.out.println("\t==> Checksum: " + ipHeader.getHeaderChecksum());
+        System.out.println("\t==> Sender IP: " + ipHeader.getSourceAddress());
+        System.out.println("\t==> Destination IP: " + ipHeader.getDestinationAddress());
+    }
+
+    /**
+     * Metodo para mostrar los datos que contiene el Payload del paquete
+     * @param tcpHeader Objeto TCPHeader
+     * @throws InterruptedException Timeout
+     */
+    private void processIPMessage(TCPHeader tcpHeader) throws InterruptedException {
+        System.out.println("[+] Processing payload ...");
+        TimeUnit.SECONDS.sleep(1);
+        System.out.println("\t==> Source Port: " + tcpHeader.getSourcePort());
+        System.out.println("\t==> Destination port: " + tcpHeader.getDestinationPort());
+        System.out.println("\t==> Sequence Number: " + tcpHeader.getSequenceNumber());
+        System.out.println("\t==> Acknowledgement Number: " + tcpHeader.getAckNumber());
+        System.out.println("\t==> Data Offset: " + tcpHeader.getDataOffset());
         System.out.println("\t==> Reserved");
-        System.out.println("\t==> URG: " + ipPacket.getIpMessage().getUrg());
-        System.out.println("\t==> ACK: " + ipPacket.getIpMessage().getAck());
-        System.out.println("\t==> PSH: " + ipPacket.getIpMessage().getPsh());
-        System.out.println("\t==> RST: " + ipPacket.getIpMessage().getRst());
-        System.out.println("\t==> SYN: " + ipPacket.getIpMessage().getSyn());
-        System.out.println("\t==> FIN: " + ipPacket.getIpMessage().getFin());
-        System.out.println("\t==> Window: " + ipPacket.getIpMessage().getWindow());
-        System.out.println("\t==> Checksum " + ipPacket.getIpMessage().getChecksum());
-        System.out.println("\t==> Urgent Pointer: " + ipPacket.getIpMessage().getUrgentPointer());
-        System.out.println("\t==> Data: " + ipPacket.getIpMessage().getData());
+        System.out.println("\t==> URG: " + tcpHeader.getUrg());
+        System.out.println("\t==> ACK: " + tcpHeader.getAck());
+        System.out.println("\t==> PSH: " + tcpHeader.getPsh());
+        System.out.println("\t==> RST: " + tcpHeader.getRst());
+        System.out.println("\t==> SYN: " + tcpHeader.getSyn());
+        System.out.println("\t==> FIN: " + tcpHeader.getFin());
+        System.out.println("\t==> Window: " + tcpHeader.getWindow());
+        System.out.println("\t==> Checksum " + tcpHeader.getChecksum());
+        System.out.println("\t==> Urgent Pointer: " + tcpHeader.getUrgentPointer());
+        System.out.println("\t==> Data: " + tcpHeader.getData());
     }
 
+    /**
+     * Metodo para cambiar el valor de si la terminal se encuentra en una conexion (true/false)
+     */
     public void connectionSwitch() {
         if(isTcpConnection()) {
             setTcpConnection(false);

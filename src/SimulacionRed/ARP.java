@@ -3,6 +3,10 @@ package SimulacionRed;
 import java.sql.Time;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * ARP
+ * Clase para instanciar ARP usado en para simular este tipo de peticiones.
+ */
 public class ARP {
     private char hwAddressType; // 1 = ethernet
     private String protocolAddressType; // 0800 = ip
@@ -15,10 +19,17 @@ public class ARP {
     private String targetProtocolAddress; // target ip
 
     /**
-     * Constructor
+     * @Constructor
+     * @param hwAddressType char 1 = ethernet
+     * @param protocolAddressType String 0800 = IP
+     * @param hwAddressLength char Mac =  6 bytes
+     * @param protocolAddressLength char IP = 4 bytes
+     * @param opCode char 1 = broadcast / 2 = reply
+     * @param senderHardwareAddress String MAC del que envia
+     * @param senderProtocolAddress String IP del que envia
+     * @param targetHardwareAddress String MAC del que recive
+     * @param targetProtocolAddress String IP del que recibe
      */
-
-    // TODO: 28/07/17 Agregar defaults a como sea necesario
     public ARP(char hwAddressType, String protocolAddressType, char hwAddressLength, char protocolAddressLength, char opCode, String senderHardwareAddress, String senderProtocolAddress, String targetHardwareAddress, String targetProtocolAddress) {
         this.hwAddressType = hwAddressType;
         this.protocolAddressType = protocolAddressType;
@@ -34,7 +45,6 @@ public class ARP {
     /**
      * Getters & Setters
      */
-
     public char getHwAddressType() {
         return hwAddressType;
     }
@@ -106,29 +116,39 @@ public class ARP {
     public void setTargetProtocolAddress(String targetProtocolAddress) {
         this.targetProtocolAddress = targetProtocolAddress;
     }
-    
+
+    /**
+     * Se engloba lo necesario para simular una peticion ARP
+     * @param arp Objeto ARP
+     * @param sourceDomain Objeto Domain
+     * @throws InterruptedException Timeouts
+     */
     public void arpProcess(ARP arp,Domain sourceDomain) throws InterruptedException {
-        // TODO: 3/08/17 use timeouts here
         arpStart(arp);
 
         String border = "";
-        String whoIs = "\t==>" + getSenderProtocolAddress() + " - Who is " + getTargetHardwareAddress();
+        String whoIs = "\t==>" + getSenderProtocolAddress() + " - Who is " + getTargetProtocolAddress();
         String iAm = "\t<==" + getTargetProtocolAddress() + " - I am " + getTargetHardwareAddress();
 
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         arpBroadcast(sourceDomain);
         System.out.println(whoIs);
 
-        timeOut(2);
+        TimeUnit.SECONDS.sleep(2);
         System.out.println(iAm);
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     }
 
+    /**
+     * Imprime el payload de la peticion ARP
+     * @param arp Objeto ARP
+     * @throws InterruptedException Timeouts
+     */
     private void arpStart(ARP arp) throws InterruptedException {
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         System.out.println("[+] Preparing ARP request...");
 
-        timeOut(1);
+        TimeUnit.SECONDS.sleep(1);
 
         System.out.println("\t==> HW Address Type: " + arp.getHwAddressType());
         System.out.println("\t==> Protocol Address Type: " + arp.getProtocolAddressType());
@@ -140,7 +160,12 @@ public class ARP {
         System.out.println("\t==> Target Hardware Address: " + arp.getTargetHardwareAddress());
         System.out.println("\t==> Target Protocol Address: " + arp.getTargetProtocolAddress());
     }
-    
+
+    /**
+     * Imprime mensaje de Broadcast
+     * @param sourceDomain Objeto Domain
+     * @throws InterruptedException Timeouts
+     */
     private void arpBroadcast(Domain sourceDomain) throws InterruptedException {
         String ipRange = "";
 
@@ -152,12 +177,7 @@ public class ARP {
             }
 
         }
-
-        timeOut(2);
+        TimeUnit.SECONDS.sleep(2);
         System.out.println("[+] Broadcasting in " + ipRange);
-    }
-
-    private void timeOut(int timeout) throws InterruptedException{
-        TimeUnit.SECONDS.sleep(timeout);
     }
 }

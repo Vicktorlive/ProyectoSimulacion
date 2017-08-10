@@ -1,20 +1,23 @@
 package SimulacionRed;
 
 public class EthernetFrame {
-    private String preamble; // 01010101010101011 56 bits of zeros and ones
+    private String preamble; // 01010101010101011 56 bits of zeros and ones delimited by 10101011
     private String destinationAddress; // mac address of destination
     private String sourceAddress; // mac address of source
     private String etherType; // 0800 = IP / 0806 = ARP
-    private String payload; // data
-    private String frameCheckSeq; // like sha checksum for entire frame
+    private IPPacket payload; // data
+    private int frameCheckSeq; // Sort of counter to be able to assemble complete data in order
 
     /**
-     * Constructor
-     */
-
-    // TODO: 28/07/17 Agregar defaults a como sea necesario
-    public EthernetFrame(String preamble, String destinationAddress, String sourceAddress, String etherType, String payload, String frameCheckSeq) {
-        this.preamble = preamble;
+     * @Constructor
+     * @param destinationAddress String MAC de destino
+     * @param sourceAddress String MAC de fuente
+     * @param etherType String 0800 = IP / 0806 ARP
+     * @param payload String
+     * @param frameCheckSeq String Permite identificar la integridad de datos y el orden
+      */
+    public EthernetFrame(String destinationAddress, String sourceAddress, String etherType, IPPacket payload, int frameCheckSeq) {
+        this.preamble = "10101010 10101010 10101010 10101010 10101010 10101010 10101010 10101011";
         this.destinationAddress = destinationAddress;
         this.sourceAddress = sourceAddress;
         this.etherType = etherType;
@@ -25,7 +28,6 @@ public class EthernetFrame {
     /**
      * Getters & Setters
      */
-
     public String getPreamble() {
         return preamble;
     }
@@ -58,19 +60,35 @@ public class EthernetFrame {
         this.etherType = etherType;
     }
 
-    public String getPayload() {
+    public IPPacket getPayload() {
         return payload;
     }
 
-    public void setPayload(String payload) {
+    public void setPayload(IPPacket payload) {
         this.payload = payload;
     }
 
-    public String getFrameCheckSeq() {
+    public int getFrameCheckSeq() {
         return frameCheckSeq;
     }
 
-    public void setFrameCheckSeq(String frameCheckSeq) {
+    public void setFrameCheckSeq(int frameCheckSeq) {
         this.frameCheckSeq = frameCheckSeq;
+    }
+
+    /**
+     * Modificar todos las propiedades del frame para resuarlo sin volver a instanciar otro
+     * @param destinationAddress String MAC destino
+     * @param sourceAddress String MAC fuente
+     * @param etherType 0800 = IP / 0806 = ARP
+     * @param payload
+     * @param frameCheckSeq
+     */
+    public void reFrame(String destinationAddress, String sourceAddress, String etherType, IPPacket payload, int frameCheckSeq) {
+        setDestinationAddress(destinationAddress);
+        setSourceAddress(sourceAddress);
+        setEtherType(etherType);
+        setPayload(payload);
+        setFrameCheckSeq(frameCheckSeq);
     }
 }
