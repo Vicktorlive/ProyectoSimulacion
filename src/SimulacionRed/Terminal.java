@@ -123,6 +123,8 @@ public class Terminal extends Hardware {
         processIndicators(tcpHeader,indicators, true);
         // Datagram size bits (mas o menos)
         int dataSize = tcpHeader.calcDatagramSize();
+        //String checksum = data.checksum(tcpHeader);
+        //tcpHeader.setChecksum(checksum);
 
         //Creating the ip header
         IPHeader ipHeader = new IPHeader(this.getIp(),destinationAddress,dataSize);

@@ -51,7 +51,7 @@ public class Data {
         byte[] bytes = in.getBytes();
         StringBuilder hex = new StringBuilder();
         for (byte b : bytes) {
-            hex.append(String.format("%02X ", b));
+            hex.append(String.format("%04X ", b));
         }
         return hex.toString();
     }
@@ -100,5 +100,69 @@ public class Data {
             plainText += nextChar;
         }
         return plainText;
+    }
+
+    /**
+     * Obtener el checksum del TCP Header
+     * @param tcpHeader Objeto TCPHeader
+     * @return String Checksum
+     */
+   /* public String checksum(TCPHeader tcpHeader) {
+        String hexData = Integer.toString(tcpHeader.getSourcePort()) + Integer.toString(tcpHeader.getDestinationPort()) + Integer.toString(tcpHeader.getSequenceNumber()) + Integer.toString(tcpHeader.getAckNumber()) + Integer.toString(tcpHeader.getDataOffset()) + Integer.toString(tcpHeader.getUrg()) + Integer.toString(tcpHeader.getAck()) + Integer.toString(tcpHeader.getPsh()) + Integer.toString(tcpHeader.getRst()) + Integer.toString(tcpHeader.getSyn()) + Integer.toString(tcpHeader.getFin()) + Integer.toString(tcpHeader.getWindow()) + tcpHeader.getChecksum() + tcpHeader.getUrgentPointer();
+
+        hexData = encodeHex(hexData)  + encodeHex(decodeBinary(tcpHeader.getData()));
+
+        String[] hexVals = hexData.split(" ");
+        int acc = 0;
+        for (int i = 0; i < hexVals.length - 1; i++) {
+            int x = Integer.parseInt(hexVals[i],16);
+            int sum = x + acc;
+        }
+        S
+
+        //String[] grouped = formSixteenBits(hexData);
+
+        String checksum = "";
+
+        /*for (int i = 0; i < grouped.length; i++) {
+            String group = grouped[i];
+            String complement = "";
+            for (int j = 0; j < group.length(); j++) {
+                char x = group.charAt(j);
+                if(Character.toString(x).equals("1")) {
+                    complement = complement + "0";
+                } else {
+                    complement = complement + "1";
+                }
+            }
+            checksum = checksum + encodeHex(decodeBinary(complement));
+        }
+
+        return hexData;
+    }*/
+
+    /**
+     * Agrupar octetos en grupos de 16 bits
+     * @param binary String binario
+     * @return Array de grupos de 16 bits
+     */
+    private String[] formSixteenBits(String binary) {
+        String[] splited = binary.split(" ");
+        String[] grouped = new String[splited.length / 2];
+        if (splited.length % 2 == 0) {
+            for (int i = 0,j = 0; i < splited.length; i += 2, j++) {
+                grouped[j] = splited[i] + splited[i + 1];
+            }
+        } else {
+            for (int i = 0, j = 0; i < splited.length - 1; i += 2, j++) {
+                if (i > splited.length) {
+                    grouped[j] = splited[splited.length - 1];
+                } else {
+                    grouped[j] = splited[i] + splited[i + 1];
+                }
+            }
+        }
+
+        return grouped;
     }
 }
