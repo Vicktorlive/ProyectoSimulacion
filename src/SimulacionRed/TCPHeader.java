@@ -72,7 +72,7 @@ public class TCPHeader {
         this.syn = 0;
         this.fin = 0;
         this.window = 32;
-        this.checksum = "0000000000000000";
+        this.checksum = "000000000000000";
         this.urgentPointer = "0000000000000000";
         this.data = data;
     }
@@ -92,7 +92,7 @@ public class TCPHeader {
         this.syn = 0;
         this.fin = 0;
         this.window = 32;
-        this.checksum = "";
+        this.checksum = "000000000000000";
         this.urgentPointer = "0000000000000000";
         this.data = "";
     }

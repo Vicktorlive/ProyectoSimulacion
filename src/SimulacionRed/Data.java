@@ -1,5 +1,7 @@
 package SimulacionRed;
 
+import java.math.BigInteger;
+
 /**
  * Clase de utileria para la transformacion de cadenas de texto a binario o hexadecimal y viceversa.
  */
@@ -51,7 +53,7 @@ public class Data {
         byte[] bytes = in.getBytes();
         StringBuilder hex = new StringBuilder();
         for (byte b : bytes) {
-            hex.append(String.format("%04X ", b));
+            hex.append(String.format("%16X ", b));
         }
         return hex.toString();
     }
@@ -107,22 +109,35 @@ public class Data {
      * @param tcpHeader Objeto TCPHeader
      * @return String Checksum
      */
-   /* public String checksum(TCPHeader tcpHeader) {
-        String hexData = Integer.toString(tcpHeader.getSourcePort()) + Integer.toString(tcpHeader.getDestinationPort()) + Integer.toString(tcpHeader.getSequenceNumber()) + Integer.toString(tcpHeader.getAckNumber()) + Integer.toString(tcpHeader.getDataOffset()) + Integer.toString(tcpHeader.getUrg()) + Integer.toString(tcpHeader.getAck()) + Integer.toString(tcpHeader.getPsh()) + Integer.toString(tcpHeader.getRst()) + Integer.toString(tcpHeader.getSyn()) + Integer.toString(tcpHeader.getFin()) + Integer.toString(tcpHeader.getWindow()) + tcpHeader.getChecksum() + tcpHeader.getUrgentPointer();
+   /*public String checksum(TCPHeader tcpHeader) {
+        String[] data = {Integer.toString(tcpHeader.getSourcePort()),Integer.toString(tcpHeader.getDestinationPort()),Integer.toString(tcpHeader.getSequenceNumber()),Integer.toString(tcpHeader.getAckNumber()),Integer.toString(tcpHeader.getDataOffset()),Integer.toString(tcpHeader.getUrg()),Integer.toString(tcpHeader.getAck()),Integer.toString(tcpHeader.getPsh()),Integer.toString(tcpHeader.getRst()),Integer.toString(tcpHeader.getSyn()),Integer.toString(tcpHeader.getFin()),Integer.toString(tcpHeader.getWindow()),tcpHeader.getChecksum(),tcpHeader.getUrgentPointer()};
 
-        hexData = encodeHex(hexData)  + encodeHex(decodeBinary(tcpHeader.getData()));
+        int arrayLength = data.length % 2 == 0 ? data.length / 2 : (data.length / 2) + 1;
+        String[] computedData = new String[arrayLength];
 
-        String[] hexVals = hexData.split(" ");
-        int acc = 0;
-        for (int i = 0; i < hexVals.length - 1; i++) {
-            int x = Integer.parseInt(hexVals[i],16);
-            int sum = x + acc;
+        int[] intData = new int[data.length];
+        //hexData = encodeHex(hexData) + encodeHex(decodeBinary(tcpHeader.getData()));
+
+        for (int i = 0; i < data.length; i++) {
+            if (data[i + 1].equals(null)) {
+                intData[i] = Integer.parseInt(data[i]);
+            } else {
+                intData[i] = Integer.parseInt(data[i]) + Integer.parseInt(data[i]);
+            }
+            computedData[i] = encodeHex(Long.toString(intData[i]));
         }
-        S
 
+        String checksum = computedData.toString();
+
+        //String[] hexVals = hexData.split(" ");
+        /*int acc = 0;
+        for (int i = 0; i < hexVals.length - 1; i++) {
+            int x = Integer.parseInt(hexVals[i], 16);
+            int sum = x + acc;
+        }*/
         //String[] grouped = formSixteenBits(hexData);
 
-        String checksum = "";
+        //String checksum = "";
 
         /*for (int i = 0; i < grouped.length; i++) {
             String group = grouped[i];
@@ -138,7 +153,7 @@ public class Data {
             checksum = checksum + encodeHex(decodeBinary(complement));
         }
 
-        return hexData;
+        return checksum;
     }*/
 
     /**

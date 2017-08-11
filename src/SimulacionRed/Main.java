@@ -1,12 +1,10 @@
 package SimulacionRed;
-
 import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import com.sun.xml.internal.bind.v2.TODO;
 
 import java.util.concurrent.TimeUnit;
 import java.util.Scanner;
 import java.util.zip.DeflaterOutputStream;
-
 /**
  * Fake mac address generator - http://www.miniwebtool.com/mac-address-generator/
  */
@@ -63,7 +61,9 @@ public class Main {
         System.out.println("\t         Port: " + portB);
 
         System.out.println("\n");
+        System.out.println("================================================");
         System.out.println("------------- Starting Simulation --------------");
+        System.out.println("================================================");
         System.out.println("\n");
 
         TimeUnit.SECONDS.sleep(3);
@@ -119,6 +119,11 @@ public class Main {
          */
         terminalB.packetReciever(ethernetFrame); // Receive
         terminalB.decodeAndPrintData(packet.getIpMessage().getData()); // Decode binary data
+        String border = "--------------- | " + ethernetFrame.getPayload().getIpHeader().getSourceAddress() + " | ---------------";
+        String delimiter = "+++++++++++++++++++++++++++++++++++++++++++++++++++";
+
+        System.out.println(border + "\n" + delimiter);
+        System.out.println("\n\n");
 
         terminalA.connectionSwitch(); // isTCPConnection = true
         terminalB.connectionSwitch(); // isTCPConnection = true
@@ -222,9 +227,6 @@ public class Main {
                     terminalB.setSeqNumber((terminalB.getSeqNumber() + input.length()) / Byte.SIZE);
                     terminalB.decodeAndPrintData(packet.getIpMessage().getData());
 
-                    /*
-                    REPLY WITH ACK AND SEQ
-                     */
                     input = "[ACK:" + Integer.toString(terminalB.getAckNumber()) + "] [SEQ:" + Integer.toString(terminalB.getSeqNumber()) + "]";
                     replyMsg();
                     packet = terminalB.createPacket(input,terminalA.getIp(),packet.getIpMessage().getDestinationPort(),packet.getIpMessage().getSourcePort(),"010000");
