@@ -2,6 +2,7 @@ package SimulacionRed;
 import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import com.sun.xml.internal.bind.v2.TODO;
 
+import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 import java.util.Scanner;
 import java.util.zip.DeflaterOutputStream;
@@ -32,8 +33,22 @@ public class Main {
     public static int[] ipRangeTwo = {172, 15, 32, 1, 45};
     public static Domain domainTwo = new Domain(routerSeis, terminalCuatro, terminalCinco, terminalSeis, ipRangeTwo);
 
+    /**
+     *
+     * @param args
+     * @throws InterruptedException
+     * @throws SQLException
+     *
+     * Existen cinco datacenters
+     */
 
-    public static void main(String[] args) throws InterruptedException {
+    public static  DataCenter sanFransico;
+    public static  DataCenter denver;
+    public static  DataCenter wachington;
+    public static  DataCenter massachusset;
+    public static  DataCenter newYork;
+
+    public static void main(String[] args) throws InterruptedException, SQLException {
         // TODO: 8/08/17 CLEAN UP 
         // TODO: 3/08/17 IP Tables, Routing, Forwarding
         Terminal[] terminales = menu(); // Main menu
@@ -79,6 +94,9 @@ public class Main {
         /*
         RESOLVE ROUTING & FORWARDING
          */
+        sanFransico.routingAndForwarding(packet);
+        TimeUnit.SECONDS.sleep(3);
+
 
         /*
         ENDS ROUTING & FORWARDING
