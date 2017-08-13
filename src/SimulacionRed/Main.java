@@ -42,7 +42,7 @@ public class Main {
      * Existen cinco datacenters
      */
 
-    public static  DataCenter sanFransico;
+    public static  DataCenter sanFransico =new DataCenter();
     public static  DataCenter denver;
     public static  DataCenter wachington;
     public static  DataCenter massachusset;
@@ -115,7 +115,8 @@ public class Main {
         /*
         RESOLVE ROUTING & FORWARDING
          */
-
+        sanFransico.routingAndForwarding(packet);
+        TimeUnit.SECONDS.sleep(3);
         /*
         ENDS ROUTING & FORWARDING
          */
@@ -131,7 +132,8 @@ public class Main {
         /*
         RESOLVE ROUTING & FORWARDING
          */
-
+        sanFransico.routingAndForwarding(packet);
+        TimeUnit.SECONDS.sleep(3);
         /*
         ENDS ROUTING & FORWARDING
          */
@@ -172,7 +174,8 @@ public class Main {
                     /*
                     ROUTING FORWARDING
                      */
-
+                    sanFransico.routingAndForwarding(packet);
+                    TimeUnit.SECONDS.sleep(3);
                     /*
                     ENDS ROUTING FORWARDING
                      */
@@ -189,7 +192,8 @@ public class Main {
                     /*
                     ROUTING FORWARDING
                      */
-
+                    sanFransico.routingAndForwarding(packet);
+                    TimeUnit.SECONDS.sleep(3);
                     /*
                     ENDS ROUTING FORWARDING
                      */
@@ -206,7 +210,8 @@ public class Main {
                     /*
                     ROUTING FORWARDING
                      */
-
+                    sanFransico.routingAndForwarding(packet);
+                    TimeUnit.SECONDS.sleep(3);
                     /*
                     ENDS ROUTING FORWARDING
                      */
@@ -236,7 +241,8 @@ public class Main {
                     /*
                     ROUTING FORWARDING
                      */
-
+                    sanFransico.routingAndForwarding(packet);
+                    TimeUnit.SECONDS.sleep(3);
                     /*
                     ENDS ROUTING FORWARDING
                      */
@@ -255,12 +261,14 @@ public class Main {
                     ROUTING FORWARDING
                      */
 
-
+                    sanFransico.routingAndForwarding(packet);
+                    TimeUnit.SECONDS.sleep(3);
 
                     /*
                     ENDS ROUTING FORWARDING
                      */
-
+                    sanFransico.routingAndForwarding(packet);
+                    TimeUnit.SECONDS.sleep(3);
                     /*
                     Receives reply
                      */
